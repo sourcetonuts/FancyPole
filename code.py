@@ -37,13 +37,13 @@ def remember_settings() :
     stored = microcontroller.nvm[0]
     print( stored )
     if stored == 0 :
-        onoff = False
+        onoff = True
         offset = 0
-    if stored > 100 :
-        onoff = False
+    if stored > num_pixels :
+        onoff = True
         offset = 0
     if stored < 100 :
-        onoff = True
+        onoff = False
         offset = stored / num_pixels
 
 def palette_cycle() :
