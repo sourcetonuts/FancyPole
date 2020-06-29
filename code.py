@@ -1,7 +1,7 @@
 import time
 import board
+import microcontroller
 import touchio
-
 import neopixel
 import adafruit_fancyled.adafruit_fancyled as fancy
 
@@ -17,6 +17,7 @@ num_pixels = 96
 led_brightness = 0.1 # mamps
 pin_leddata = board.D4
 pin_touch = board.A0
+print( "FancyPole" )
 
 strip = neopixel.NeoPixel( pin_leddata, num_pixels, brightness = led_brightness, auto_write = False )
 touch = touchio.TouchIn( pin_touch )
@@ -31,6 +32,20 @@ palette = fancy.expand_gradient( grad, 50 )
 onoff = True
 offset = 0
 
+def remember_settings() :
+    print("remember_settings()")
+    stored = microcontroller.nvm[0]
+    print( stored )
+    if stored == 0 :
+        onoff = False
+        offset = 0
+    if stored > 100 :
+        onoff = False
+        offset = 0
+    if stored < 100 :
+        onoff = True
+        offset = stored / num_pixels
+
 def palette_cycle() :
     for i in range( num_pixels ):
         colorindex = offset + ( i / num_pixels )
@@ -40,10 +55,32 @@ def palette_cycle() :
             return
     strip.show()
 
+remember_settings()
+
+def show_static() :
+    print("show_static()")
+    # pick the center color and fill the strip with that color statically displayed
+    colorindex = offset + 0.5
+    color = fancy.palette_lookup( palette, colorindex )
+    strip.fill( color.pack() )
+    strip.show()
+    print( offset )
+    microcontroller.nvm[0] = int( offset * num_pixels ) % num_pixels
+    print( microcontroller.nvm[0] )
+
+def restart_rainbow() :
+    print("restart_rainbow()")
+    # flash back before starting rainbow
+    strip.fill( (0,0,0) )
+    strip.show()
+    microcontroller.nvm[0] = 0 # zero offset stored means static
+
+# Loop Forever
 while True :
     if onoff :
+        # cycle the rainbow when on
         palette_cycle()
-        offset += 0.025
+        offset += 0.025 # this sets how quickly the rainbow changes (bigger is faster)
 
     # deal w/ switching modes
     wason = not touch.value
@@ -55,15 +92,8 @@ while True :
 
         # when off paint/fill w/ the center color
         if onoff :
-            # flash back before starting rainbow
-            strip.fill( (0,0,0) )
-            strip.show()
-            offset = 0
+            restart_rainbow()
         else :
-            # pick the center color and fill the strip with that color statically displayed
-            colorindex = offset + 0.5
-            color = fancy.palette_lookup( palette, colorindex )
-            strip.fill( color.pack() )
-            strip.show()
+            show_static()
 
         time.sleep( 0.5 )  # big delay so we dont 2x trigger
