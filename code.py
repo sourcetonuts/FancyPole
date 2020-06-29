@@ -48,7 +48,10 @@ while True :
         onoff = not onoff # toggle onoff state
 
         # when off paint/fill w/ the center color
-        if not onoff :
+        if onoff :
+            strip.fill( (0,0,0) )
+            strip.show()
+        else :
             colorindex = offset + 0.5
             color = fancy.palette_lookup( palette, colorindex )
             strip.fill( color.pack() )
