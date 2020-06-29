@@ -5,9 +5,21 @@ import touchio
 import neopixel
 import adafruit_fancyled.adafruit_fancyled as fancy
 
+# with the following 96 LED setup on an Adafruit Trinket M0
+# it could be wired up to run off of a basic/standard USB charger or laptop
+# cabling required for Trinket
+#   USB micro for power
+#   pin 1 to touch button/copper pad
+#   pin 4 to NeoPixel data input pin
+#   along with USB and GND from the Trinket for NeoPixel power/ground/data-in 3 conductor cable
+
 num_pixels = 96
-strip = neopixel.NeoPixel( board.D4, num_pixels, brightness=0.05, auto_write=False )
-touch = touchio.TouchIn( board.A0 )
+led_brightness = 0.1 # mamps
+pin_leddata = board.D4
+pin_touch = board.A0
+
+strip = neopixel.NeoPixel( pin_leddata, num_pixels, brightness = led_brightness, auto_write = False )
+touch = touchio.TouchIn( pin_touch )
 
 # refer to
 # https://learn.adafruit.com/fancyled-library-for-circuitpython/led-colors
@@ -46,6 +58,7 @@ while True :
             # flash back before starting rainbow
             strip.fill( (0,0,0) )
             strip.show()
+            offset = 0
         else :
             # pick the center color and fill the strip with that color statically displayed
             colorindex = offset + 0.5
