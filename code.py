@@ -30,32 +30,7 @@ palette = fancy.expand_gradient( grad, 50 )
 
 # todo read in these as stored from NVM or Drive or ?
 onoff = True
-offset = 0
-
-def remember_settings() :
-    print("remember_settings()")
-    stored = microcontroller.nvm[0]
-    print( stored )
-    if stored == 0 :
-        onoff = True
-        offset = 0
-    if stored > num_pixels :
-        onoff = True
-        offset = 0
-    if stored < 100 :
-        onoff = False
-        offset = stored / num_pixels
-
-def palette_cycle() :
-    for i in range( num_pixels ):
-        colorindex = offset + ( i / num_pixels )
-        color = fancy.palette_lookup( palette, colorindex )
-        strip[i] = color.pack()
-        if touch.value :
-            return
-    strip.show()
-
-remember_settings()
+offset = 0.001
 
 def show_static() :
     print("show_static()")
@@ -68,12 +43,37 @@ def show_static() :
     microcontroller.nvm[0] = int( offset * num_pixels ) % num_pixels
     print( microcontroller.nvm[0] )
 
+def remember_settings() :
+    print("remember_settings()")
+    stored = microcontroller.nvm[0]
+    print( stored )
+    if stored == 0 :
+        onoff = True
+        offset = 0.001
+    elif stored > num_pixels :
+        onoff = True
+        offset = 0.001
+    else :
+        onoff = False
+        offset = stored / num_pixels
+        show_static()
+
+def palette_cycle() :
+    for i in range( num_pixels ):
+        colorindex = offset + ( i / num_pixels )
+        color = fancy.palette_lookup( palette, colorindex )
+        strip[i] = color.pack()
+        if touch.value :
+            return
+    strip.show()
+
 def restart_rainbow() :
     print("restart_rainbow()")
     # flash back before starting rainbow
     strip.fill( (0,0,0) )
     strip.show()
-    microcontroller.nvm[0] = 0 # zero offset stored means static
+
+remember_settings()
 
 # Loop Forever
 while True :
@@ -93,6 +93,7 @@ while True :
         # when off paint/fill w/ the center color
         if onoff :
             restart_rainbow()
+            microcontroller.nvm[0] = 0 # zero offset stored changing rainbow is active
         else :
             show_static()
 
