@@ -6,7 +6,7 @@ import neopixel
 import adafruit_fancyled.adafruit_fancyled as fancy
 
 num_pixels = 96
-strip = neopixel.NeoPixel( board.D2, num_pixels, brightness=0.05, auto_write=False )
+strip = neopixel.NeoPixel( board.D4, num_pixels, brightness=0.05, auto_write=False )
 touch = touchio.TouchIn( board.A0 )
 
 # refer to
@@ -38,7 +38,7 @@ def palette_cycle() :
 while True :
     if onoff :
         palette_cycle()
-        offset += 0.02
+        offset += 0.025
 
     # deal w/ switching modes
     wason = not touch.value
