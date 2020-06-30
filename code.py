@@ -2,6 +2,7 @@ import time
 import board
 import microcontroller
 import touchio
+from digitalio import DigitalInOut, Direction, Pull
 import neopixel
 import adafruit_fancyled.adafruit_fancyled as fancy
 
@@ -17,10 +18,13 @@ num_pixels = 96
 led_brightness = 0.1 # mamps
 pin_leddata = board.D4
 pin_touch = board.A0
+pin_status = board.D13
 print( "FancyPole" )
 
 strip = neopixel.NeoPixel( pin_leddata, num_pixels, brightness = led_brightness, auto_write = False )
 touch = touchio.TouchIn( pin_touch )
+status = DigitalInOut( pin_status )
+status.direction = Direction.OUTPUT
 
 # refer to
 # https://learn.adafruit.com/fancyled-library-for-circuitpython/led-colors
@@ -74,6 +78,7 @@ def restart_rainbow() :
     strip.show()
 
 remember_settings()
+status.value = onoff
 
 # Loop Forever
 while True :
@@ -89,6 +94,7 @@ while True :
     if not wason and touch.value :
         # just touched mode button
         onoff = not onoff # toggle onoff state
+        status.value = onoff
 
         # when off paint/fill w/ the center color
         if onoff :
