@@ -28,9 +28,12 @@ status.direction = Direction.OUTPUT
 
 # refer to
 # https://learn.adafruit.com/fancyled-library-for-circuitpython/led-colors
-#
+
+# across the rainbow
 grad = [ (0.0,0xFF0000), (0.33,0x00FF00), (0.67,0x0000FF), (1.0,0xFF0000)]
-palette = fancy.expand_gradient( grad, 50 )
+# shades of gray
+#grad = [ (0.0,0xf0f0f0), (0.1,0x606060), (0.5,0x101010), (0.9,0x606060), (1.0,0xf0f0f0)]
+palette = fancy.expand_gradient( grad, 20 )
 
 # todo read in these as stored from NVM or Drive or ?
 onoff = True
