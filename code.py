@@ -30,9 +30,18 @@ status.direction = Direction.OUTPUT
 # https://learn.adafruit.com/fancyled-library-for-circuitpython/led-colors
 
 # across the rainbow
-grad = [ (0.0,0xFF0000), (0.33,0x00FF00), (0.67,0x0000FF), (1.0,0xFF0000)]
+#grad = [ (0.0,0xFF0000), (0.33,0x00FF00), (0.67,0x0000FF), (1.0,0xFF0000)]
+
+# nice set of orange
+grad = [ (0.0,0x708800), (0.1,0x305500), (0.5,0x001100), (0.9,0x305500), (1.0,0x708800)]
+
 # shades of gray
-#grad = [ (0.0,0xf0f0f0), (0.1,0x606060), (0.5,0x101010), (0.9,0x606060), (1.0,0xf0f0f0)]
+grad = [ (0.0,0xf0f0f0), (0.1,0x606060), (0.5,0x101010), (0.9,0x606060), (1.0,0xf0f0f0)]
+
+# gold
+#grad = [ (0.0,0xffdf00), (0.5,0xc5b358), (1.0,0xffdf00)]
+
+
 palette = fancy.expand_gradient( grad, 20 )
 
 # todo read in these as stored from NVM or Drive or ?
@@ -46,14 +55,12 @@ def show_static() :
     color = fancy.palette_lookup( palette, colorindex )
     strip.fill( color.pack() )
     strip.show()
-    print( offset )
+    print( "offset: {}".format(offset) )
     microcontroller.nvm[0] = int( offset * num_pixels ) % num_pixels
-    print( microcontroller.nvm[0] )
 
 def remember_settings() :
-    print("remember_settings()")
     stored = microcontroller.nvm[0]
-    print( stored )
+    print("remember_settings({})".format(stored) )
     if stored == 0 :
         onoff = True
         offset = 0.001
@@ -90,20 +97,21 @@ while True :
         palette_cycle()
         offset += 0.025 # this sets how quickly the rainbow changes (bigger is faster)
 
-    # deal w/ switching modes
+    # deal w/ button presses...
     wason = not touch.value
-
-    time.sleep(0.005)  # 5ms delay
+    time.sleep(0.005)  # 5ms delay for debounce
     if not wason and touch.value :
         # just touched mode button
+        time.sleep(0.005)  # 5ms delay for debounce
         onoff = not onoff # toggle onoff state
         status.value = onoff
 
-        # when off paint/fill w/ the center color
         if onoff :
+            # when just on restart color cycling
             restart_rainbow()
             microcontroller.nvm[0] = 0 # zero offset stored changing rainbow is active
         else :
+            # and if just off just off paint/fill w/ the center color
             show_static()
 
-        time.sleep( 0.5 )  # big delay so we dont 2x trigger
+        time.sleep( 0.5 )  # big delay so we dont 2x trigger button presses
