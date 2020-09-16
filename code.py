@@ -15,7 +15,7 @@ import adafruit_fancyled.adafruit_fancyled as fancy
 #   along with USB and GND from the Trinket for NeoPixel power/ground/data-in 3 conductor cable
 
 num_pixels = 96
-led_brightness = 0.1 # mamps
+led_brightness = 0.25 # fraction of full power (TBD mamps
 pin_leddata = board.D4
 pin_touch = board.A0
 pin_status = board.D13
@@ -30,13 +30,13 @@ status.direction = Direction.OUTPUT
 # https://learn.adafruit.com/fancyled-library-for-circuitpython/led-colors
 
 # across the rainbow
-#grad = [ (0.0,0xFF0000), (0.33,0x00FF00), (0.67,0x0000FF), (1.0,0xFF0000)]
+grad = [ (0.0,0xFF0000), (0.33,0x00FF00), (0.67,0x0000FF), (1.0,0xFF0000)]
 
 # nice set of orange
-grad = [ (0.0,0x708800), (0.1,0x305500), (0.5,0x001100), (0.9,0x305500), (1.0,0x708800)]
+#grad = [ (0.0,0x708800), (0.1,0x305500), (0.5,0x001100), (0.9,0x305500), (1.0,0x708800)]
 
 # shades of gray
-grad = [ (0.0,0xf0f0f0), (0.1,0x606060), (0.5,0x101010), (0.9,0x606060), (1.0,0xf0f0f0)]
+#grad = [ (0.0,0xf0f0f0), (0.5,0x101010), (1.0,0xf0f0f0)]
 
 # gold
 #grad = [ (0.0,0xffdf00), (0.5,0xc5b358), (1.0,0xffdf00)]
@@ -84,8 +84,8 @@ def palette_cycle() :
 def restart_rainbow() :
     print("restart_rainbow()")
     # flash back before starting rainbow
-    strip.fill( (0,0,0) )
-    strip.show()
+    #strip.fill( (0,0,0) )
+    #strip.show()
 
 remember_settings()
 status.value = onoff
@@ -95,7 +95,7 @@ while True :
     if onoff :
         # cycle the rainbow when on
         palette_cycle()
-        offset += 0.025 # this sets how quickly the rainbow changes (bigger is faster)
+        offset += 0.035 # this sets how quickly the rainbow changes (bigger is faster)
 
     # deal w/ button presses...
     wason = not touch.value
