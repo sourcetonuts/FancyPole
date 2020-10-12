@@ -3,7 +3,7 @@ import board
 import microcontroller
 import touchio
 from digitalio import DigitalInOut, Direction, Pull
-import neopixel
+import adafruit_dotstar as dotstar
 import adafruit_fancyled.adafruit_fancyled as fancy
 
 # with the following 96 LED setup on an Adafruit Trinket M0
@@ -11,17 +11,17 @@ import adafruit_fancyled.adafruit_fancyled as fancy
 # cabling required for Trinket
 #   USB micro for power
 #   pin 1 to touch button/copper pad
-#   pin 4 to NeoPixel data input pin
+#   pin 3 to Dotstar clock input pin
+#   pin 4 to Dotstar data input pin
 #   along with USB and GND from the Trinket for NeoPixel power/ground/data-in 3 conductor cable
 
 num_pixels = 96
 led_brightness = 0.25 # fraction of full power (TBD mamps
-pin_leddata = board.D4
 pin_touch = board.A0
 pin_status = board.D13
 print( "FancyPole" )
 
-strip = neopixel.NeoPixel( pin_leddata, num_pixels, brightness = led_brightness, auto_write = False )
+strip = dotstar.DotStar( board.SCK, board.MOSI, num_pixels, brightness=led_brightness )
 touch = touchio.TouchIn( pin_touch )
 status = DigitalInOut( pin_status )
 status.direction = Direction.OUTPUT
