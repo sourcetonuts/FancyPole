@@ -21,7 +21,7 @@ pin_touch = board.A0
 pin_status = board.D13
 print( "FancyPole" )
 
-strip = dotstar.DotStar( board.SCK, board.MOSI, num_pixels, brightness=led_brightness )
+strip = dotstar.DotStar( board.SCK, board.MOSI, num_pixels, brightness=led_brightness, auto_write = False )
 touch = touchio.TouchIn( pin_touch )
 status = DigitalInOut( pin_status )
 status.direction = Direction.OUTPUT
