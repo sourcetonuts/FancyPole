@@ -6,6 +6,8 @@ from digitalio import DigitalInOut, Direction, Pull
 import neopixel
 import adafruit_fancyled.adafruit_fancyled as fancy
 
+
+# TRINKET M0
 # with the following 96 LED setup on an Adafruit Trinket M0
 # it could be wired up to run off of a basic/standard USB charger or laptop
 # cabling required for Trinket
@@ -14,17 +16,20 @@ import adafruit_fancyled.adafruit_fancyled as fancy
 #   pin 4 to NeoPixel data input pin
 #   along with USB and GND from the Trinket for NeoPixel power/ground/data-in 3 conductor cable
 
+# GEMMA M0 wiring
+#   USB micro for power
+#   pin 6 aka A2 to touch button/copper pad
+#   pin 2 aka D1 to NeoPixel data input pin
+#   along with USB and GND from the Trinket for NeoPixel power/ground/data-in 3 conductor cable
+
 num_pixels = 96
 led_brightness = 0.25 # fraction of full power (TBD mamps
-pin_leddata = board.D4
-pin_touch = board.A0
-pin_status = board.D13
+pin_leddata = board.D1   # Trinket M0 board.D4
+pin_touch = board.A1     # Trinket M0 board.A0
 print( "FancyPole" )
 
 strip = neopixel.NeoPixel( pin_leddata, num_pixels, brightness = led_brightness, auto_write = False )
 touch = touchio.TouchIn( pin_touch )
-status = DigitalInOut( pin_status )
-status.direction = Direction.OUTPUT
 
 # refer to
 # https://learn.adafruit.com/fancyled-library-for-circuitpython/led-colors
@@ -73,7 +78,7 @@ def remember_settings() :
         show_static()
 
 def palette_cycle() :
-    for i in range( num_pixels ):
+    for i in range( num_pixels ) :
         colorindex = offset + ( i / num_pixels )
         color = fancy.palette_lookup( palette, colorindex )
         strip[i] = color.pack()
@@ -88,7 +93,6 @@ def restart_rainbow() :
     #strip.show()
 
 remember_settings()
-status.value = onoff
 
 # Loop Forever
 while True :
@@ -104,7 +108,6 @@ while True :
         # just touched mode button
         time.sleep(0.005)  # 5ms delay for debounce
         onoff = not onoff # toggle onoff state
-        status.value = onoff
 
         if onoff :
             # when just on restart color cycling
