@@ -7,7 +7,7 @@ import adafruit_fancyled.adafruit_fancyled as fancy
 num_pixels = 30
 
 # pin usage: TRINKET: board.D4, GEMMA: board.D1
-strip = neopixel.NeoPixel( board.D1, num_pixels, brightness = 0.25, auto_write = False )
+strip = neopixel.NeoPixel( board.D4, num_pixels, brightness = 0.25, auto_write = False )
 
 print( "FancyPole Gemma M0" )
 
@@ -77,8 +77,8 @@ class TouchMode :
 # OnOff pin usage: TRINKET: board.A0, GEMMA: board.A1
 # Mode pin usage: TRINKET: board. TBD ??, GEMMA: board.A2
 
-onoffMachine = TouchMode( board.A1, 1, "onoff" )
-modeMachine = TouchMode( board.A2, 2 )
+onoffMachine = TouchMode( board.A0, 1, "onoff" )
+modeMachine = TouchMode( board.A3, 2 )
 
 onoff = True
 offset = 0.001
