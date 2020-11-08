@@ -53,45 +53,47 @@ def palette_cycle( coloff ) :
 # on that pin up to provided lastmode
 #
 class TouchMode :
-    def __init__( self, pin, lastmode = 1, name = None ) :
-        self.mode = 0
-        self.lastmode = lastmode
-        self.touch = touchio.TouchIn( pin )
+    def __init__( self, inputMode, num = 2, name = None ) :
+        self.value = 0
+        self.lastmode = num - 1
+        self.input = inputMode
         self.name = name or "mode"
 
-    def exec( self ) :
-        wasoff = not self.touch.value
+    def update( self ) :
+        wasoff = not self.input.value
         time.sleep(0.005)  # 5ms delay for debounce
-        if not wasoff and self.touch.value :
+        if not wasoff and self.input.value :
             # just touched button
             time.sleep(0.005)  # 5ms delay for debounce
-            if self.mode >= self.lastmode :
-                self.mode = 0
+            if self.value >= self.lastmode :
+                self.value = 0
             else :
-                self.mode = self.mode + 1
+                self.value = self.value + 1
             # debounce
             time.sleep( 0.5 )
-            print( self.name + " {}".format( self.mode ) )
-        return self.mode
+            print( self.name + " {}".format( self.value ) )
+        return self.value
 
 # OnOff pin usage: TRINKET: board.A0, GEMMA: board.A1
-# Mode pin usage: TRINKET: board. TBD ??, GEMMA: board.A2
+# Mode pin usage: TRINKET: board.A3, GEMMA: board.A2
 
-onoffMachine = TouchMode( board.A0, 1, "onoff" )
-modeMachine = TouchMode( board.A3, 2 )
+inputOnOff = touchio.TouchIn( board.A0 )
+onoffMachine = TouchMode( inputOnOff, 2, "onoff" )
+inputMode = touchio.TouchIn( board.A3 )
+modeMachine = TouchMode( inputMode, 3 )
 
-onoff = True
+OnOff = True
 offset = 0.001
 mode = 0
 
 # Loop Forever
 while True :
-    OnOff = onoffMachine.exec()
+    OnOff = onoffMachine.update()
     if OnOff == 0 :
         palette_cycle( offset )
         offset += 0.035 # this sets how quickly the rainbow changes (bigger is faster)
     else :
-        newmode = modeMachine.exec()
+        newmode = modeMachine.update()
         if mode != newmode :
             mode = newmode
 
