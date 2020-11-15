@@ -10,7 +10,7 @@ num_pixels = 96
 strip = neopixel.NeoPixel( board.D4, num_pixels, brightness = 0.05, auto_write = False )
 #, pixel_order= neopixel.RGB
 
-print( "Steelyard #1 Trinket M0" )
+print( "FancyPole #1 Trinket M0" )
 
 # TouchMode
 # this class manages a single captouch pin and cycles through modes
