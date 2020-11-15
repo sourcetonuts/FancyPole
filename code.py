@@ -10,7 +10,7 @@ num_pixels = 96
 strip = neopixel.NeoPixel( board.D4, num_pixels, brightness = 0.05, auto_write = False )
 #, pixel_order= neopixel.RGB
 
-print( "Steelyard #1 Gemma M0" )
+print( "Steelyard #1 Trinket M0" )
 
 # TouchMode
 # this class manages a single captouch pin and cycles through modes
@@ -74,30 +74,18 @@ class RainMan :
 
 display = RainMan( strip )
 
-# OnOff pin usage: TRINKET: board.A0, GEMMA: board.A1
-# Mode pin usage: TRINKET: board.A3, GEMMA: board.A2
-
-inputOnOff = touchio.TouchIn( board.A1 )
-onoffMachine = TouchMode( inputOnOff, 2, "onoff" )
-inputMode = touchio.TouchIn( board.A3 )
-#modeMachine = TouchMode( inputMode, 3 )
+# Mode pin usage: TRINKET: board.A0, GEMMA: board.A1
+inputMode = touchio.TouchIn( board.A0 )
+modeMachine = TouchMode( inputMode, 2 )
 
 offset = 0.001
-mode = 0
 
 # Loop Forever
 while True :
-    onoff = onoffMachine.update()
-    if onoff == 0 :
+    mode = modeMachine.update()
+    if mode == 0 :
         display.palette_cycle( offset )
         offset += 0.005 # 0.035 # this sets how quickly the rainbow changes (bigger is faster)
     else :
-        #newmode = modeMachine.update()
-        #if mode != newmode :
-        #    mode = newmode
-
-        if mode == 0 :
-            # and if just off just off paint/fill w/ the center color
-            display.show_static( offset )
-        else :
-            display.show_static( offset )# Write your code here :-)
+        # and if just off just off paint/fill w/ the center color
+        display.show_static( offset + 0.5 )
