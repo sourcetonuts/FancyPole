@@ -4,49 +4,59 @@ import touchio
 import neopixel
 import adafruit_fancyled.adafruit_fancyled as fancy
 
-num_pixels = 30
+num_pixels = 96 #60 works
 
-# pin usage: TRINKET: board.D4, GEMMA: board.D1
-strip = neopixel.NeoPixel( board.D4, num_pixels, brightness = 0.25, auto_write = False )
+strip = neopixel.NeoPixel(
+    board.D4, num_pixels, brightness = 1,
+    auto_write = False, pixel_order= neopixel.RGB )
 
-print( "FancyPole Gemma M0" )
+print( "FancyPole #1 Trinket M0" )
 
-# refer to
-# https://learn.adafruit.com/fancyled-library-for-circuitpython/led-colors
-# across the rainbow
-grad = [ (0.0,0xFF0000), (0.33,0x00FF00), (0.67,0x0000FF), (1.0,0xFF0000)]
-palette = fancy.expand_gradient( grad, 20 )
+class RainMan :
+    def __init__( self, strip ) :
+        # refer to
+        # https://learn.adafruit.com/fancyled-library-for-circuitpython/led-colors
+        # across the rainbow
+        self.strip = strip
+        self.lookup = []
+        self.size = ( strip.n ) / 2
 
-#
-# returns the mid color in the palette
-# which we call the selected color
-#
-def color_selected( coloff ) :
-    # pick the center color and fill the strip with that color statically displayed
-    colorindex = coloff + 0.5
-    color = fancy.palette_lookup( palette, colorindex )
-    return color.pack()
+        grad = [ (0.0,0xFF0000), (0.33,0x00FF00), (0.67,0x0000FF), (1.0,0xFF0000)]
+        palette = fancy.expand_gradient( grad, 20 )
+        for index in range(self.size) :
+            coloff = index / self.size
+            rgb = fancy.palette_lookup( palette, coloff )
+            color = rgb.pack()
+            self.lookup.append( color )
+        # delete to free memory grad and palette we don't them any longer
+        del grad
+        del palette
 
-#
-# sets the strip to the color offset into the palette
-#
-def show_static( coloff ) :
-    rgb = color_selected( coloff )
-    strip.fill( rgb )
-    strip.show()
+    def color_selected( self, coloff ) :
+        coloff = coloff % 1
+        colindex = int( coloff * self.size )
+        return self.lookup[colindex]
 
-#
-# cycles through the palette starting w/ an offset into the palette
-# show all of the palette, so loops back to the start based on the
-# starting offset
-#
-def palette_cycle( coloff ) :
-    for i in range( num_pixels ) :
-        colorindex = coloff + ( i / num_pixels )
-        color = fancy.palette_lookup( palette, colorindex )
-        rgb = color.pack()
-        strip[i] = rgb
-    strip.show()
+    def show_static( self, coloff ) :
+        color = self.color_selected( coloff )
+        strip.fill( color )
+        strip.show()
+
+#    def show_static_white( self ) :
+#        if strip.bpp == 4 :
+#            strip.fill((255,255,255,255))
+#        else :
+#            strip.fill((255,255,255))
+#        strip.show()
+
+    def palette_cycle( self, coloff ) :
+        for index in range( num_pixels ) :
+            offset = coloff + ( index / num_pixels )
+            rgb = self.color_selected( offset % 1 )
+            strip[index] = rgb
+        strip.show()
+
+display = RainMan( strip )
 
 # TouchMode
 # this class manages a single captouch pin and cycles through modes
@@ -74,31 +84,19 @@ class TouchMode :
             print( self.name + " {}".format( self.value ) )
         return self.value
 
-# OnOff pin usage: TRINKET: board.A0, GEMMA: board.A1
-# Mode pin usage: TRINKET: board.A3, GEMMA: board.A2
+inputMode = touchio.TouchIn( board.A0 )
+modeMachine = TouchMode( inputMode, 2 )
 
-inputOnOff = touchio.TouchIn( board.A0 )
-onoffMachine = TouchMode( inputOnOff, 2, "onoff" )
-inputMode = touchio.TouchIn( board.A3 )
-modeMachine = TouchMode( inputMode, 3 )
-
-OnOff = True
-offset = 0.001
-mode = 0
+offset = 0
 
 # Loop Forever
 while True :
-    OnOff = onoffMachine.update()
-    if OnOff == 0 :
-        palette_cycle( offset )
-        offset += 0.035 # this sets how quickly the rainbow changes (bigger is faster)
+    mode = modeMachine.update()
+    if mode == 0 :
+        display.palette_cycle( offset )
+        offset += 0.005 # 0.035 # this sets how quickly the rainbow changes (bigger is faster)
     else :
-        newmode = modeMachine.update()
-        if mode != newmode :
-            mode = newmode
+        # and if just off just off paint/fill w/ the center color
+        display.show_static( offset + 0.5 )
 
-        if mode == 0 :
-            # and if just off just off paint/fill w/ the center color
-            show_static( offset )
-        else :
-            show_static( offset )
+# end of program
