@@ -4,10 +4,10 @@ import touchio
 import neopixel
 import adafruit_fancyled.adafruit_fancyled as fancy
 
-num_pixels = 96 #60 works
+num_pixels = 96
 
 strip = neopixel.NeoPixel(
-    board.D4, num_pixels, brightness = 1,
+    board.D4, num_pixels, brightness = 0.1,
     auto_write = False, pixel_order= neopixel.RGB )
 
 print( "FancyPole #1 Trinket M0" )
