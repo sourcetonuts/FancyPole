@@ -4,13 +4,59 @@ import touchio
 import neopixel
 import adafruit_fancyled.adafruit_fancyled as fancy
 
-num_pixels = 96
+num_pixels = 96 #60 works
 
-# pin usage: TRINKET: board.D4, GEMMA: board.D1
-strip = neopixel.NeoPixel( board.D4, num_pixels, brightness = 0.05, auto_write = False )
-#, pixel_order= neopixel.RGB
+strip = neopixel.NeoPixel(
+    board.D4, num_pixels, brightness = 1,
+    auto_write = False, pixel_order= neopixel.RGB )
 
 print( "FancyPole #1 Trinket M0" )
+
+class RainMan :
+    def __init__( self, strip ) :
+        # refer to
+        # https://learn.adafruit.com/fancyled-library-for-circuitpython/led-colors
+        # across the rainbow
+        self.strip = strip
+        self.lookup = []
+        self.size = ( strip.n ) / 2
+
+        grad = [ (0.0,0xFF0000), (0.33,0x00FF00), (0.67,0x0000FF), (1.0,0xFF0000)]
+        palette = fancy.expand_gradient( grad, 20 )
+        for index in range(self.size) :
+            coloff = index / self.size
+            rgb = fancy.palette_lookup( palette, coloff )
+            color = rgb.pack()
+            self.lookup.append( color )
+        # delete to free memory grad and palette we don't them any longer
+        del grad
+        del palette
+
+    def color_selected( self, coloff ) :
+        coloff = coloff % 1
+        colindex = int( coloff * self.size )
+        return self.lookup[colindex]
+
+    def show_static( self, coloff ) :
+        color = self.color_selected( coloff )
+        strip.fill( color )
+        strip.show()
+
+#    def show_static_white( self ) :
+#        if strip.bpp == 4 :
+#            strip.fill((255,255,255,255))
+#        else :
+#            strip.fill((255,255,255))
+#        strip.show()
+
+    def palette_cycle( self, coloff ) :
+        for index in range( num_pixels ) :
+            offset = coloff + ( index / num_pixels )
+            rgb = self.color_selected( offset % 1 )
+            strip[index] = rgb
+        strip.show()
+
+display = RainMan( strip )
 
 # TouchMode
 # this class manages a single captouch pin and cycles through modes
@@ -38,47 +84,10 @@ class TouchMode :
             print( self.name + " {}".format( self.value ) )
         return self.value
 
-class RainMan :
-    def __init__( self, strip ) :
-        # refer to
-        # https://learn.adafruit.com/fancyled-library-for-circuitpython/led-colors
-        # across the rainbow
-        self.strip = strip
-        self.lookup = []
-        self.size = strip.n * 2
-
-        grad = [ (0.0,0xFF0000), (0.33,0x00FF00), (0.67,0x0000FF), (1.0,0xFF0000)]
-        palette = fancy.expand_gradient( grad, 20 )
-        for index in range(self.size) :
-            coloff = index / self.size
-            rgb = fancy.palette_lookup( palette, coloff )
-            color = rgb.pack()
-            self.lookup.append( color )
-
-    def color_selected( self, coloff ) :
-        coloff = coloff % 1
-        colindex = int( coloff * self.size )
-        return self.lookup[colindex]
-
-    def show_static( self, coloff ) :
-        color = self.color_selected( coloff )
-        strip.fill( color )
-        strip.show()
-
-    def palette_cycle( self, coloff ) :
-        for index in range( num_pixels ) :
-            offset = coloff + ( index / num_pixels )
-            rgb = self.color_selected( offset % 1 )
-            strip[index] = rgb
-        strip.show()
-
-display = RainMan( strip )
-
-# Mode pin usage: TRINKET: board.A0, GEMMA: board.A1
 inputMode = touchio.TouchIn( board.A0 )
 modeMachine = TouchMode( inputMode, 2 )
 
-offset = 0.001
+offset = 0
 
 # Loop Forever
 while True :
@@ -89,3 +98,5 @@ while True :
     else :
         # and if just off just off paint/fill w/ the center color
         display.show_static( offset + 0.5 )
+
+# end of program
