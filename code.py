@@ -7,7 +7,7 @@ print( "FancyPole #2 Trinket M0" )
 # make the strip and here a 96 LED NeoPixel strip (can be dotstar, etc. w/ libraries)
 strip = neopixel.NeoPixel(
     board.D4, 96, brightness = 0.25,
-    auto_write = False, pixel_order= neopixel.RGBW )
+    auto_write = False, pixel_order= neopixel.RGB )
 
 # Kenny's Display classs, It uses strip passed and libraries: adafruit_fancyled
 import MyPy.rainman
