@@ -29,9 +29,9 @@ while True :
     mode = modeMachine.update()
     if mode == 0 :
         display.palette_cycle( offset )
-        offset += 0.005
+        offset += 0.005 # raising this speeds up the changes/steps
     else :
-        # and if just off just off paint/fill w/ the center color
+        # just paint/fill w/ the center color
         display.show_static( offset + 0.5 )
 
 # end of program
