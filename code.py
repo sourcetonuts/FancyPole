@@ -29,7 +29,7 @@ while True :
     mode = modeMachine.update()
     if mode == 0 :
         display.palette_cycle( offset )
-        offset += 0.005 # 0.035 # this sets how quickly the rainbow changes (bigger is faster)
+        offset += 0.005
     else :
         # and if just off just off paint/fill w/ the center color
         display.show_static( offset + 0.5 )
