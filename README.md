@@ -2,7 +2,7 @@
 Provides the software function for Matt's 96 LED Pole Lamp.
 https://www.instagram.com/p/CFX9ujtgswL/
 
-More of Matt's lamps and other stuff https://www.instagram.com/p/CFX9ujtgswL/
+More of Matt's lamps and other stuff https://www.instagram.com/anders_haus/
 
 ## Hardware
 
